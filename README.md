@@ -67,3 +67,68 @@ More information about the usage of this directory in [the documentation](https:
 This directory contains your Vuex store files. Creating a file in this directory automatically activates Vuex.
 
 More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/store).
+
+
+
+
+
+
+
+
+
+# serverMiddleware nedir ?
+
+- Normal şartlarda `nuxt.js` instance olarak alt tarafta ki server'a bağlanabiliyor.
+- Yani bundan kaynaklı olarak dilediğimiz bir middlewari servre üzerinden yapabiliriz.
+- Mesela dışarda php , java , python vs. backend dilleri kullanıyoruz. işte bunlara `nuxt.js` ile birlikte uygulama geliştirirken
+  ihtiyacımız kalmayabilir.
+- Tamamen kendi yazmış ve oluşturduğumuz api onu server içinde referans olarak verip kullanabiliriz.
+- Bu api tamamen `express.js` ile BLL katmanı oluyor.
+- Express.js bir SSR freamwroki diyebiliriz. `Node.js`'in bir freamworküdür.
+- Mesela `php`'den hiç bir farkı yok. fazlası var eksiği yok. php mi kaldı be :)
+- VUE RENDER'DAN ÖNCE ÇALIŞMASINI İSTEDİĞİMİZ SERVERSIDE İÇİNDE ÇALIŞMASINI İSTEDİĞİMİZ ARKADŞALARI BURADA TANIMLIYORUZ DİYEBİLİRİZ.
+
+Tanımı : `nuxt.config.js` ' de gerçekleşir.
+
+```js
+serverMiddleware: []; // bir dizi alır. bir kaç farklı türde veri alır.
+```
+
+# serverMiddleware ile middleware arasında ki fark nedir ?
+
+| middleware                                   | serverMiddleware                                        |
+| :------------------------------------------- | :------------------------------------------------------ |
+| Client ' da çalışır                          | Server üzerinde çalışır                                 |
+| Her routte ve ya sayfa yenilemesinde çalışır | sunucu başlatıldığında yürütülen işlemleri temsil eder. |
+
+# Hadi başlayalım
+
+Önce bir kaç tane bağımlıklarımız var.
+1 - Express : Server side olarak `node.js` tabanlı bir SSR freamworkü
+2 - body-parser: POST, PUT gibi http isteklerinde kullanıcıdan bilgileri genelde bodyden alırız. body-parser bu body isteklerini json halde almamızı sağlayan yardımcı bir kütüphanedir.
+3- Axios : http requestlerimizi bu kütüphane ile atacağız.
+
+dowlonad: `npm install --save express body-parser axios`
+
+# express.js ile bir backend tarafı oluşturalım ve kendimi "demo veriler işleyelim."
+
+- Bunun için öncelik ilk `~/api/index.js` adlı bir path oluşturuyorum.
+
+```js
+const express = require("express"); //paketi içe gömdüm
+
+const app = express();
+
+module.exports = {
+  path: "/api", //sunucum hangi url'den ayakta duracak.
+  handler: app, //hangi yapıyı ele alacağını belirtiyorum.
+};
+```
+
+Şimdi yapılandırma tamamlandı ama bunun çalışması için `nuxt.config.js` ' de **`serverMiddleware`** tarafında tanıtmam lazım.
+
+```js
+//nuxt.config.js
+serverMiddleware: ["`~/api"], // benim `path: "/api", //sunucum hangi url'den ayakta duracak.` demiştim işte bunuda burada tanımlıyorum.
+```
+
